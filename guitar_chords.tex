@@ -19,7 +19,9 @@
 \usepackage{graphicx}
 \usepackage{colortbl}
 \usepackage{longtable}
-\graphicspath{{/home/claude/ly_images/}}
+% Les portées sont engendrées par outils/generer.py depuis les doigtés
+% ci-dessous : elles ne peuvent donc pas contredire leur diagramme.
+\graphicspath{{gravures/}}
 
 \hfuzz=10pt
 
@@ -93,7 +95,7 @@
 \newcommand{\cw}[2]{%
   \parbox[b]{2.75cm}{\centering
     #2\newline
-    \includegraphics[width=1.90cm]{#1_t}%
+    \includegraphics[width=1.90cm]{#1_t.cropped}%
   }%
 }
 

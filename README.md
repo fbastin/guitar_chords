@@ -1,39 +1,68 @@
 # Guitar Chord Reference
 
-A comprehensive visual guide to guitar chords, typeset in LaTeX using TikZ.
+A comprehensive visual guide to guitar chords, typeset in LaTeX using TikZ for
+the diagrams and LilyPond for the staff notation.
 
 ## Overview
 
-This project provides a high-quality, printable PDF reference for guitar chords in standard tuning (**E A D G B e**). It includes visual diagrams for a wide variety of chord shapes, designed for clarity and ease of use.
+A printable PDF reference for guitar chords in standard tuning (**E A D G B e**).
+It opens with a chord-theory chapter covering the seven natural roots A through G
+— every chord type for each, with its formula and its notation — and continues
+with practical fretboard voicings grouped by chord family.
 
 ## Files
 
-- `guitar_chords.tex`: The LaTeX source code.
-- `guitar_chords.pdf`: The compiled, ready-to-print reference guide.
-- `LICENSE`: MIT License.
+| Path | Contents |
+| --- | --- |
+| `guitar_chords.tex` | Main document: diagrams, fingerings, summary tables. |
+| `theory_chapter.tex` | The seven chord families. **Generated** — see below. |
+| `gravures/` | Staff notation, one file per chord. **Generated.** |
+| `outils/` | The generator and its pitch model. |
+| `guitar_chords.pdf` | The compiled reference. |
 
-## Building from Source
+## Building
 
-To compile the PDF from the LaTeX source, you will need a LaTeX distribution (such as TeX Live or MiKTeX) installed on your system.
-
-Use `pdflatex` to generate the PDF:
+Everything the document needs is committed, so LaTeX alone suffices:
 
 ```bash
-pdflatex guitar_chords.tex
+pdflatex guitar_chords.tex   # twice, for references
 ```
 
-Note: You may need to run it twice to ensure all references and formatting are correctly processed.
+To regenerate the staff notation and the theory chapter — after changing a
+fingering, adding a chord, or editing the tables:
+
+```bash
+python3 outils/generer.py                      # .ly sources + theory_chapter.tex
+lilypond -dcrop --formats=pdf gravures/*.ly    # engravings
+pdflatex guitar_chords.tex                     # twice
+```
+
+### Why a generator
+
+The staff notation under each diagram is **derived from the fingering in
+`guitar_chords.tex`**, not drawn separately. That matters: six diagrams once
+sounded a different chord than their name — an `E`-shape barre fingered as an
+`A` shape, a `Caug` with a foreign F — and because the notation was engraved
+independently, nothing flagged the disagreement. Now it cannot happen: change a
+fingering and its notation follows, or the generator fails.
+
+`outils/chords.py` holds the pitch model. A pitch there is a *(letter,
+alteration)* pair rather than a semitone number, and each chord tone gets its
+letter from the scale degree it occupies. That is what makes `Edim7` come out as
+E–B♭–E–G–D♭ rather than E–A♯–E–G–C♯: a diminished seventh is a seventh, not a
+sixth, and only the spelling says so.
+
+`theory_chapter.tex` is generated from the same model. Its 98 rows differ only by
+root and quality, and their commentary is a template with the key's own note
+names filled in — writing them out by hand would have been 98 chances to name the
+wrong note.
 
 ### Dependencies
 
-The following LaTeX packages are used:
-- `tikz` (for chord diagrams)
-- `geometry`
-- `xcolor`
-- `titlesec`
-- `fancyhdr`
-- `booktabs`
-- `longtable`
+- LaTeX: `tikz`, `geometry`, `xcolor`, `titlesec`, `fancyhdr`, `booktabs`,
+  `longtable`, `mdframed`, `colortbl`, `array`, `graphicx`
+- LilyPond 2.24 or later (only to regenerate the engravings)
+- Python 3 (standard library only)
 
 ## License
 

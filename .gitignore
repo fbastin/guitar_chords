@@ -329,3 +329,18 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+## LilyPond : intermédiaires de gravure
+# `lilypond -dcrop` produit, à côté du PDF rogné que le guide inclut, une
+# version non rognée et un PNG dont personne ne se sert.
+gravures/*.eps
+gravures/*.png
+gravures/*.ps
+gravures/*.midi
+gravures/*.mid
+# Les PDF rognés, eux, sont suivis : ils permettent de compiler le document
+# sans avoir LilyPond installé.
+
+## Python
+__pycache__/
+*.pyc
