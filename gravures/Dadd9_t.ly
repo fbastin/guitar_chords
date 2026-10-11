@@ -20,7 +20,7 @@
     \clef "treble_8"
     \omit Staff.TimeSignature
     \cadenzaOn
-    <d a d' e'>1
+    <d fis a d' e'>1
     \bar "|."
   }
   \layout { }

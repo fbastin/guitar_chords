@@ -76,6 +76,51 @@ def lire_accords():
     return out
 
 
+# Tout diagramme du document, y compris ceux des chansons, qui n'ont pas de
+# portée et échappent donc à MOTIF.
+MOTIF_DIAGRAMME = re.compile(
+    r"\\chord\{((?:[^{}]|\{[^{}]*\})*)\}"
+    r"\{(\d+)\}\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}")
+
+
+def verifier_accords():
+    """
+    Chaque diagramme doit sonner l'accord qu'il nomme : toutes ses notes, et
+    aucune autre. Seule la quinte peut manquer, comme dans le do7 x32310.
+    Un Dadd9 sans fa dièse (un Dsus2) ou un Bdim avec un la (un Bm7♭5)
+    passaient sans que rien ne le signale.
+    """
+    from chords import LETTRES, QUALITES
+    src = open(TEX, encoding="utf-8").read()
+    erreurs, n = [], 0
+    for m in MOTIF_DIAGRAMME.finditer(src):
+        nom, dep, mar, bar, pts = m.groups()
+        if nom.startswith("#"):          # la définition de la macro elle-même
+            continue
+        n += 1
+        racine = lire_racine(nom)
+        ligne = src.count("\n", 0, m.start()) + 1
+        if not racine or racine[2] not in QUALITES:
+            erreurs.append(f"ligne {ligne} : {nom} — qualité inconnue")
+            continue
+        lettre, alt, qual = racine
+        attendu = notes_accord(lettre, alt, qual)
+        doigte = doigte_depuis(int(dep), mar, bar, pts)
+        reel = {h % 12 for h in hauteurs(doigte)}
+        quinte = {pc for pc, (l, _) in attendu.items()
+                  if (LETTRES.index(l) - LETTRES.index(lettre)) % 7 == 4}
+        manque = set(attendu) - reel - quinte
+        trop = reel - set(attendu)
+        if manque or trop:
+            noms = "C C# D D# E F F# G G# A A# B".split()
+            erreurs.append(f"ligne {ligne} : {nom} — "
+                           f"manque {[noms[p] for p in sorted(manque)]}, "
+                           f"en trop {[noms[p] for p in sorted(trop)]}")
+    if erreurs:
+        sys.exit("Diagrammes faux :\n  " + "\n  ".join(erreurs))
+    return n
+
+
 def portee(nom, doigte):
     """
     Le voicing tel qu'il sonne, en rondes, sur portée en clé de sol octaviée.
@@ -109,19 +154,19 @@ def portee(nom, doigte):
 # se tromper de note.
 FAMILLE_ORDRE = [
     ("",      "major",         "1 -- 3 -- 5",                   "Bright, stable."),
-    ("m",     "minor",         "1 -- $\\flat$3 -- 5",           "Dark. Lower the 3rd: {d3} $\\to$ $\\flat${d3}."),
+    ("m",     "minor",         "1 -- $\\flat$3 -- 5",           "Dark. Lower the 3rd: {d3} $\\to$ {d3b}."),
     ("5",     "power chord",   "1 -- 5",                        "Raw, neutral. No 3rd."),
     ("sus2",  "sus. 2nd",      "1 -- 2 -- 5",                   "Open. Replace 3rd with 2nd ({d2})."),
     ("sus4",  "sus. 4th",      "1 -- 4 -- 5",                   "Tense. Replace 3rd with 4th ({d4})."),
     ("6",     "major sixth",   "1 -- 3 -- 5 -- 6",              "Sweet, vintage. Add 6th ({d6})."),
     ("add9",  "add nine",      "1 -- 3 -- 5 -- 9",              "Colourful. Add 2nd/9th ({d2}), no 7th."),
-    ("7",     "dominant 7th",  "1 -- 3 -- 5 -- $\\flat$7",      "Bluesy. Lower 7th: {d7} $\\to$ $\\flat${d7}."),
+    ("7",     "dominant 7th",  "1 -- 3 -- 5 -- $\\flat$7",      "Bluesy. Lower 7th: {d7} $\\to$ {d7b}."),
     ("maj7",  "major 7th",     "1 -- 3 -- 5 -- 7",              "Dreamy, jazzy. Keep natural 7th ({d7})."),
     ("m7",    "minor 7th",     "1 -- $\\flat$3 -- 5 -- $\\flat$7", "Mellow, soulful. Lower 3rd and 7th."),
     ("aug",   "augmented",     "1 -- 3 -- $\\sharp$5",          "Eerie. Raise the 5th by 1 semitone."),
     ("dim",   "diminished",    "1 -- $\\flat$3 -- $\\flat$5",   "Very tense. Lower 3rd and 5th."),
     ("dim7",  "dim. 7th",      "1 -- $\\flat$3 -- $\\flat$5 -- $\\flat\\flat$7", "Max. tense. All minor 3rds."),
-    ("m7b5",  "half-dim.",     "1 -- $\\flat$3 -- $\\flat$5 -- $\\flat$7", "Tense, jazzy (also: {r}$\\varnothing$)."),
+    ("m7b5",  "half-dim.",     "1 -- $\\flat$3 -- $\\flat$5 -- $\\flat$7", "Tense, jazzy (also: {r}\\o)."),
 ]
 
 # Les sept fondamentales naturelles et leur armure.
@@ -201,7 +246,11 @@ def ecrire_theorie():
                 r=lettre,
                 d2=tex_note(*degres[1]), d3=tex_note(*degres[2]),
                 d4=tex_note(*degres[3]), d6=tex_note(*degres[5]),
-                d7=tex_note(*degres[6]))
+                d7=tex_note(*degres[6]),
+                # Baisser d'un demi-ton change l'altération, pas la lettre :
+                # C♯ devient C, E devient E♭.
+                d3b=tex_note(degres[2][0], degres[2][1] - 1),
+                d7b=tex_note(degres[6][0], degres[6][1] - 1))
             # Rayage une ligne sur deux, comme dans les tableaux voisins du guide.
             lignes.append(r"\rowcolor{%s}" % ("rowA" if i_q % 2 == 0 else "rowB"))
             lignes.append(
@@ -286,6 +335,8 @@ def _ly_accord(lettre, qual, armure):
 
 
 def main():
+    n_diag = verifier_accords()
+    print(f"{n_diag} diagrammes vérifiés : chacun sonne l'accord qu'il nomme")
     os.makedirs(DIR_LY, exist_ok=True)
     accords = lire_accords()
     for clef, (nom, doigte) in sorted(accords.items()):

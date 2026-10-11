@@ -46,6 +46,12 @@ sounded a different chord than their name — an `E`-shape barre fingered as an
 independently, nothing flagged the disagreement. Now it cannot happen: change a
 fingering and its notation follows, or the generator fails.
 
+Before writing anything, the generator also checks that every diagram — those
+of the songs included — sounds exactly the chord it names: all of its notes and
+no other, only the fifth being allowed to drop out, as in the `C7` x32310. The
+check caught a `Dadd9` without its F♯, really a `Dsus2`, and a `Bdim` with an
+A, really a `Bm7♭5`.
+
 `outils/chords.py` holds the pitch model. A pitch there is a *(letter,
 alteration)* pair rather than a semitone number, and each chord tone gets its
 letter from the scale degree it occupies. That is what makes `Edim7` come out as
