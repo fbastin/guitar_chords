@@ -32,9 +32,9 @@ To regenerate the staff notation and the theory chapter — after changing a
 fingering, adding a chord, or editing the tables:
 
 ```bash
-python3 outils/generer.py                      # .ly sources + theory_chapter.tex
-lilypond -dcrop --formats=pdf gravures/*.ly    # engravings
-pdflatex guitar_chords.tex                     # twice
+python3 outils/generer.py                            # .ly sources + theory_chapter.tex
+(cd gravures && lilypond -dcrop --formats=pdf *.ly)  # engravings
+pdflatex guitar_chords.tex                           # twice
 ```
 
 ### Why a generator
@@ -66,7 +66,8 @@ wrong note.
 ### Dependencies
 
 - LaTeX: `tikz`, `geometry`, `xcolor`, `titlesec`, `fancyhdr`, `booktabs`,
-  `longtable`, `mdframed`, `colortbl`, `array`, `graphicx`
+  `longtable`, `mdframed`, `colortbl`, `array`, `graphicx`, `enumitem`,
+  `etoolbox`
 - LilyPond 2.24 or later (only to regenerate the engravings)
 - Python 3 (standard library only)
 
