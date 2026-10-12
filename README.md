@@ -67,7 +67,7 @@ wrong note.
 
 - LaTeX: `tikz`, `geometry`, `xcolor`, `titlesec`, `fancyhdr`, `booktabs`,
   `longtable`, `mdframed`, `colortbl`, `array`, `graphicx`, `enumitem`,
-  `etoolbox`
+  `etoolbox`, `hyperref`
 - LilyPond 2.24 or later (only to regenerate the engravings)
 - Python 3 (standard library only)
 

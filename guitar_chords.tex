@@ -19,6 +19,9 @@
 \usepackage{graphicx}
 \usepackage{colortbl}
 \usepackage{longtable}
+% Chargé en dernier : titre et auteur du PDF, signets, table des matières
+% et renvois cliquables, comme dans les guides de théorie.
+\usepackage{hyperref}
 % Les portées sont engendrées par outils/generer.py depuis les doigtés
 % ci-dessous : elles ne peuvent donc pas contredire leur diagramme.
 \graphicspath{{gravures/}}
@@ -31,6 +34,10 @@
 \definecolor{mygray}{RGB}{110,110,110}
 \definecolor{rowA}{RGB}{245,248,255}
 \definecolor{rowB}{RGB}{255,255,255}
+
+\hypersetup{colorlinks=true, linkcolor=navy, urlcolor=navy,
+  pdftitle={Guitar Chord Reference — A Comprehensive Visual Guide},
+  pdfauthor={Fabian Bastin}}
 
 % ---- Header / footer -----------------------------------------------
 \pagestyle{fancy}
@@ -686,7 +693,7 @@ then the strumming or picking pattern and a focused playing tip.
 \textbf{-} = rest, \textbf{$\times$} = choked strum.
 
 % ----------------------------------------------------------------
-\subsection{1. Horse With No Name --- America (1971)
+\subsection[Horse With No Name --- America (1971)]{1. Horse With No Name --- America (1971)
   \hfill\small\normalfont Level: beginner}
 
 \noindent{\small
@@ -723,7 +730,7 @@ D6 on strings 3 and 1 --- and string 2 rings open in both. Leave strings
 \bigskip
 
 % ----------------------------------------------------------------
-\subsection{2. Knockin' on Heaven's Door --- Bob Dylan (1973)
+\subsection[Knockin' on Heaven's Door --- Bob Dylan (1973)]{2. Knockin' on Heaven's Door --- Bob Dylan (1973)
   \hfill\small\normalfont Level: beginner}
 
 \noindent{\small
@@ -764,7 +771,7 @@ follow.}
 \bigskip
 
 % ----------------------------------------------------------------
-\subsection{3. Wonderwall --- Oasis (1995)
+\subsection[Wonderwall --- Oasis (1995)]{3. Wonderwall --- Oasis (1995)
   \hfill\small\normalfont Level: intermediate}
 
 \noindent{\small
@@ -816,7 +823,7 @@ five chords; only fingers 1 and 2 change position.}
 \bigskip
 
 % ----------------------------------------------------------------
-\subsection{4. House of the Rising Sun --- The Animals (1964)
+\subsection[House of the Rising Sun --- The Animals (1964)]{4. House of the Rising Sun --- The Animals (1964)
   \hfill\small\normalfont Level: intermediate}
 
 \noindent{\small
